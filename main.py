@@ -98,6 +98,5 @@ if __name__ == '__main__':
         app.run_webhook(
             listen="0.0.0.0",
             port=PORT,
-            webhook_path=f"/{TOKEN}",
-            webhook_url=f"https://palestra-intuito-bot.onrender.com/{TOKEN}"
+            url=f"https://palestra-intuito-bot.onrender.com/{TOKEN}"
         )
