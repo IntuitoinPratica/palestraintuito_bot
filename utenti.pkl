@@ -1,0 +1,5 @@
+import pickle
+
+utenti = {}
+with open("utenti.pkl", "wb") as f:
+    pickle.dump(utenti, f)
