@@ -99,6 +99,5 @@ if __name__ == '__main__':
             listen="0.0.0.0",
             port=PORT,
             webhook_path=f"/{TOKEN}",
-            webhook_url=f"https://palestra-intuito-gratis.onrender.com/{TOKEN}"
+            webhook_url=f"https://palestra-intuito-bot.onrender.com/{TOKEN}"
         )
-
