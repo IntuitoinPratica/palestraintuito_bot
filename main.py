@@ -52,11 +52,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await invia_contenuto(context.application, user_id, 1)
 
-    # Salvo subito i dati dell’utente
     with open("utenti.pkl", "wb") as f:
         pickle.dump(utenti, f)
 
-    # Programmo l’invio quotidiano
     scheduler.add_job(
         invio_giornaliero,
         trigger='interval',
@@ -77,10 +75,8 @@ async def invio_giornaliero(application):
         if giorno <= 30:
             await invia_contenuto(application, user_id, giorno)
         else:
-            # Facoltativo: puoi rimuovere l’utente o fermare l’invio
             logging.info(f"L'utente {user_id} ha completato tutti i giorni.")
 
-    # Salvo gli aggiornamenti
     with open("utenti.pkl", "wb") as f:
         pickle.dump(utenti, f)
 
@@ -93,10 +89,4 @@ if __name__ == '__main__':
         app.add_handler(CommandHandler("start", start))
         print("✅ Bot avviato con successo!")
 
-        PORT = int(os.environ.get('PORT', '8443'))
-
-        app.run_webhook(
-            listen="0.0.0.0",
-            port=PORT,
-            url=f"https://palestra-intuito-bot.onrender.com/{TOKEN}"
-        )
+        app.run_polling()
