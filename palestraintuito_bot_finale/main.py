@@ -92,4 +92,13 @@ if __name__ == '__main__':
         app = ApplicationBuilder().token(TOKEN).build()
         app.add_handler(CommandHandler("start", start))
         print("✅ Bot avviato con successo!")
-        app.run_polling()
+
+        PORT = int(os.environ.get('PORT', '8443'))
+
+        app.run_webhook(
+            listen="0.0.0.0",
+            port=PORT,
+            webhook_path=f"/{TOKEN}",
+            webhook_url=f"https://palestra-intuito-gratis.onrender.com/{TOKEN}"
+        )
+
