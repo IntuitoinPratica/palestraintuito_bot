@@ -11,8 +11,11 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 # 📁 Caricamento utenti salvati
 if os.path.exists("utenti.pkl"):
-    with open("utenti.pkl", "rb") as f:
-        utenti = pickle.load(f)
+    try:
+        with open("utenti.pkl", "rb") as f:
+            utenti = pickle.load(f)
+    except Exception:
+        utenti = {}
 else:
     utenti = {}
 
@@ -41,6 +44,7 @@ async def invia_contenuto(application, user_id, giorno):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
+    # Aggiorna o aggiungi l’utente
     utenti[user_id] = {
         "giorno": 1,
         "prossimo": datetime.now() + timedelta(days=1)
@@ -52,9 +56,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await invia_contenuto(context.application, user_id, 1)
 
+    # Salva dati utente
     with open("utenti.pkl", "wb") as f:
         pickle.dump(utenti, f)
 
+    # Rimuovi job duplicato se esiste
+    if scheduler.get_job(str(user_id)):
+        scheduler.remove_job(str(user_id))
+
+    # Programma l’invio quotidiano
     scheduler.add_job(
         invio_giornaliero,
         trigger='interval',
@@ -72,10 +82,10 @@ async def invio_giornaliero(application):
 
         giorno = utenti[user_id]["giorno"]
 
-        if giorno <= 30:
+        if giorno <= 15:
             await invia_contenuto(application, user_id, giorno)
         else:
-            logging.info(f"L'utente {user_id} ha completato tutti i giorni.")
+            logging.info(f"L'utente {user_id} ha completato tutti i 15 giorni.")
 
     with open("utenti.pkl", "wb") as f:
         pickle.dump(utenti, f)
@@ -88,5 +98,4 @@ if __name__ == '__main__':
         app = ApplicationBuilder().token(TOKEN).build()
         app.add_handler(CommandHandler("start", start))
         print("✅ Bot avviato con successo!")
-
         app.run_polling()
